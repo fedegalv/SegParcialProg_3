@@ -60,12 +60,7 @@ $app->group('/materia', function (RouteCollectorProxy $group) {
 
 $app->group('/inscripcion', function (RouteCollectorProxy $group){
     $group->post('[/{idMateria}]', InscripcionController:: class .":add")->add(new AlumnoAuthMiddleware);
-    $group->get('[/{idMateria}]', InscripcionController:: class .":asd")->add(new UserOrAdminAuthMiddleware);
+
 })->add(new JsonMiddleware);
 
-
-/* $app->group('/retiro', function (RouteCollectorProxy $group) {
-    $group->get('[/{patente}]', AutoController::class. ":retiro")->add(new UserAuthMiddleware);
-})->add(new JsonMiddleware);
- */
 $app->run();
