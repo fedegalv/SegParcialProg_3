@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use \Firebase\JWT\JWT;
 
-class UserOrAdminAuthMiddleware
+class ProfesorAuthMiddleware
 {
     public function __invoke(Request $request, RequestHandler $handler):Response
     {
@@ -17,7 +17,7 @@ class UserOrAdminAuthMiddleware
         try {
             $decoded = JWT::decode($token[0], "segundoParcial", array('HS256'));
             //var_dump($decoded);
-            if($decoded->tipo == 'admin' || $decoded->tipo == 'user'){
+            if($decoded->tipo == 'profesor'){
                 //echo "entre en valido";
                 $valido= true;
             }
@@ -29,7 +29,7 @@ class UserOrAdminAuthMiddleware
         if(!$valido)
         {
             $response = new Response();
-            $response->getBody()->write("TOKEN O AUTENTICACION INVALIDA, NO ES ADMIN");
+            $response->getBody()->write("TOKEN O AUTENTICACION INVALIDA, NO ES PROFeSOR");
             //throw new \Slim\Exception\HttpForbiddenException($request);
             return $response->withStatus(403);
         }else{

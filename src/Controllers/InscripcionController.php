@@ -40,6 +40,23 @@ class InscripcionController{
         return $response;
     }
 
+    public function mostrarInscriptos(Request $request, Response $response, $args) {
+        $idMateria = $args['idMateria'];
+        $inscriptos = Inscripcion::join('materias', 'inscripciones.id_materia', 'materias.id')->where('id_materia', '=', $idMateria)->get();
+        //echo "<pre>";
+        //print_r($inscriptos);
+        if( $inscriptos != null)
+        {
+            
+            $response->getBody()->write(json_encode($inscriptos));
+        }
+        else{
+            $response->getBody()->write("NO SE ENCONTRO LA MATERIA");
+            return $response->withStatus(400);
+        }
+        return $response;
+    }
+
 
 
 }

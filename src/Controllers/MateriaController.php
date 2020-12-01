@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use App\Models\Materia;
+use App\Models\Nota;
 
 class MateriaController{
     public function getAll(Request $request, Response $response, $args) {
@@ -82,6 +83,9 @@ class MateriaController{
         $response->getBody()->write(json_encode($rta));
         return $response;
     }
+
+
+
 
 
 }

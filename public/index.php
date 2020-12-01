@@ -18,49 +18,63 @@ use App\Controllers;
 use App\Controllers\UsuarioController;
 use App\Controllers\MateriaController;
 use App\Controllers\InscripcionController;
-
+use App\Controllers\NotaController;
 use App\Middlewares\AdminAuthMiddleware;
+use App\Middlewares\AdminOrProfessorAuthMiddleware;
 use App\Middlewares\AlumnoAuthMiddleware;
 
 use Slim\Routing\RouteCollectorProxy;
 
 use App\Middlewares\JsonMiddleware;
 use App\Middlewares\DatosValidosUsuario;
-use App\Middlewares\UserAuthMiddleware;
-use App\Middlewares\UserOrAdminAuthMiddleware;
+use App\Middlewares\ProfesorAuthMiddleware;
+
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
-//5-PONER BASEPATH DONDE ESTA EL INDEX.php 
-///6-COPIAR EL .htacess  MISMA ALTURA QUE INDEX EN PUBLIC
-//7-BUSCAR ACA https://packagist.org/packages/illuminate/database
-// INSTALAR composer require illuminate/database
-//8- SETEAR EN database.php NOMBRE DE LA BD, PASSWORD A "" Y USER SI NECESARIO
-//9- USAR composer require "illuminate/events"
+
 
 $app->setBasePath('/SegParcialProg_3/public');
-//11- INSTANCIAR Database
-new Database;
-//12- CREAR EN src LA CARPETA Models, donde van los MODELS DE LA DB
 
-//SE REEMPLAZO LO QUE QUEDO EN OLDIndex POR ESTO
-//PARA PODER USAR EL USERCONTROLLER
+new Database;
+//1
 $app->group('/users', function (RouteCollectorProxy $group) {
     $group->post('[/]', UsuarioController:: class .":registro")->add(new DatosValidosUsuario);
 })->add(new JsonMiddleware);
-
+//2
 $app->group('/login', function (RouteCollectorProxy $group) {
     $group->post('[/]', UsuarioController:: class .":login");
 })->add(new JsonMiddleware);
-
+//3
 $app->group('/materia', function (RouteCollectorProxy $group) {
     $group->post('[/]', MateriaController:: class .":add")->add(new AdminAuthMiddleware);
 })->add(new JsonMiddleware);
-
+//4
 $app->group('/inscripcion', function (RouteCollectorProxy $group){
     $group->post('[/{idMateria}]', InscripcionController:: class .":add")->add(new AlumnoAuthMiddleware);
 
 })->add(new JsonMiddleware);
+//5
+$app->group('/notas', function (RouteCollectorProxy $group) {
+    $group->post('[/{idMateria}]', NotaController:: class .":put")->add(new ProfesorAuthMiddleware);
+})->add(new JsonMiddleware);
+//6
+$app->group('/inscripcion', function (RouteCollectorProxy $group){
+    $group->get('[/{idMateria}]', InscripcionController:: class .":mostrarInscriptos")->add(new AdminOrProfessorAuthMiddleware);
+
+})->add(new JsonMiddleware);
+
+//7
+$app->group('/materia', function (RouteCollectorProxy $group){
+    $group->get('[/]', MateriaController:: class .":getAll")->add(new AdminOrProfessorAuthMiddleware);
+
+})->add(new JsonMiddleware);
+//8
+$app->group('/notas', function (RouteCollectorProxy $group){
+    $group->get('[/{idMateria}]', NotaController:: class .":mostrarNotas")->add(new AdminOrProfessorAuthMiddleware);
+
+})->add(new JsonMiddleware);
+
 
 $app->run();
